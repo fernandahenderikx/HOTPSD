@@ -1,2 +1,2 @@
 # HOTPSD
-This repository includes code and data used in the analysis for "Taxon-specific community structure partitions marine particle size spectra into stable and dynamic components". Further documentation and code organizing is currently underway.
+This repository includes code and data used in the analysis for "Taxon-specific community structure partitions marine particle size spectra into stable and dynamic components". Further documentation and code organizing is currently underway. Data are found in "data" folder. To re-run analysis, see mfiles/MAIN file, which reproduces all paper figures and runs statistical tests. For all mfiles, make sure the path for the data folder (datadir) is appropriately referenced in your local computer.
