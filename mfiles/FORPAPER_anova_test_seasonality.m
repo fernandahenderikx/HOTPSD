@@ -6,9 +6,9 @@ datadir = '\\jett\AWlab\DATA\Fernanda\PAPERS\HOT_PSD\submission\code\data'
 files = dir([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1\*_uw_all.mat'])
 TABLE={};
 for mmm = 1:length(files)
-    load(fullfile(files(mmm).folder, files(mmm).name),'vdnCSA_aloha','diams','gmt_all','cruisen_all')
+    load(fullfile(files(mmm).folder, files(mmm).name),'vdn_aloha','diams','gmt_all','cruisen_all')
     ind = find(cruisen_all==308);
-    vdnCSA_aloha(ind,:)=[];
+    vdn_aloha(ind,:)=[];
     gmt_all(ind)=[];
     % make season array
     if ~isa(gmt_all,'datetime')
@@ -22,7 +22,7 @@ for mmm = 1:length(files)
     season(ismember(mo,[9 10 11]))= "Fall";
     season = categorical(season, ["Winter","Spring","Summer","Fall"]);
     
-    V = vdnCSA_aloha;
+    V = vdn_aloha;
     % remove all data < 7 um
     keep7 = (diams >= 7);
     V7 = V(:, keep7);

@@ -1,7 +1,7 @@
-function T = runTaxonMomentStats_fromDir(taxonFiles, vdn13, dD13, diams13, D50, D90, startBin)
+function [T D50m D90m] = runTaxonMomentStats(taxonFiles, vdn13, dD13, diams13, D50, D90, startBin)
 % vdn13, dD13, diams13 are ALREADY restricted to startBin:end (e.g., 13:end)
 % D50 and D90 are computed from vdn13 already.
-% Taxon files still contain full-size vdnCSA_aloha; we truncate those to startBin:end
+% Taxon files still contain full-size vdn_aloha; we truncate those to startBin:end
 % before doing anything.
 
 if nargin < 7 || isempty(startBin)
@@ -32,8 +32,8 @@ row = 0;
 for i = 1:nTax
     
     fpath = fullfile(taxonFiles(i).folder, taxonFiles(i).name);
-    S = load(fpath, 'vdnCSA_aloha');
-    taxV_full = S.vdnCSA_aloha;                % [nCruise x nBins_full]
+    S = load(fpath, 'vdn_aloha');
+    taxV_full = S.vdn_aloha;                % [nCruise x nBins_full]
     
     % Truncate taxon PSD to match your bulk arrays (which are already 13:end)
     taxV13 = taxV_full(:, startBin:end);       % [nCruise x nBins13]

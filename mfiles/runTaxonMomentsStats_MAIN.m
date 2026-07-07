@@ -2,7 +2,7 @@ clear all;close all;
 datadir = '\\jett\AWlab\DATA\Fernanda\PAPERS\HOT_PSD\submission\code\data'
 
 % get bulk vdn by cruise
-load([datadir filesep 'avg_bulk_psd_aloha_kahe.mat'],'*aloha','diams')
+load([datadir filesep 'avg_bulk_psd_aloha_kahe_notCSA.mat'],'*aloha','diams')
 u=unique(cruisen_aloha);
 ind = find(u==308);
 u(ind)=[];
@@ -33,39 +33,40 @@ D90 = diams(idx);
 
 %% run single comparisons (with and without taxon removed frombulk). excluding 308.
 taxonFiles = dir([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1\*_uw_all.mat']);
+%taxonFiles = dir([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1\Dictyochophyceae_uw_all.mat']);
 
-T = runTaxonMomentStats(taxonFiles, vdn, dD, diams, D50, D90, 13);
+ [T D50m D90m]  = runTaxonMomentStats(taxonFiles, vdn, dD, diams, D50, D90, 13);
 
 writetable(T, 'Taxon_Moment_Stats.csv');
 
 
 %% multiple linear regressions diatoms + cyano
-load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Bacillariophyceae_uw_all.mat'], 'vdnCSA_aloha','diams')
-Vdiatom_tot = trapz(diams(13:end),vdnCSA_aloha([1:4 6:end],[13:end]),2);
+load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Bacillariophyceae_uw_all.mat'], 'vdn_aloha','diams')
+Vdiatom_tot = trapz(diams(13:end),vdn_aloha([1:4 6:end],[13:end]),2);
 
 
-load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Cyanobacteria_uw_all.mat'], 'vdnCSA_aloha','diams')
-Vcyano_tot = trapz(diams(13:end),vdnCSA_aloha([1:4 6:end],[13:end]),2);
+load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Cyanobacteria_uw_all.mat'], 'vdn_aloha','diams')
+Vcyano_tot = trapz(diams(13:end),vdn_aloha([1:4 6:end],[13:end]),2);
 
 
 
 mdl_D50_vs_dia_plus_cyano = fitlm([log10(Vdiatom_tot+eps), log10(Vcyano_tot+eps)], D50);
-mdl_D90_vs_dia_plus_cyano = fitlm([log10(Vdiatom_tot+eps), log10(Vcyano_tot+eps)], D90);
+%mdl_D90_vs_dia_plus_cyano = fitlm([log10(Vdiatom_tot+eps), log10(Vcyano_tot+eps)], D90);
 mdl_D50_vs_dia_plus_cyano_zscore = fitlm([zscore(log10(Vdiatom_tot+eps)), ...
              zscore(log10(Vcyano_tot+eps))], ...
              zscore(D50));
-mdl_D90_vs_dia_plus_cyano_zscore = fitlm(zscore([log10(Vdiatom_tot+eps), log10(Vcyano_tot+eps)]), zscore(D90));
+%mdl_D90_vs_dia_plus_cyano_zscore = fitlm(zscore([log10(Vdiatom_tot+eps), log10(Vcyano_tot+eps)]), zscore(D90));
 
 %% ok, multiple linear regression of all things that drive D50 and D90:
-load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Detritus_uw_all.mat'], 'vdnCSA_aloha','diams')
-Vdet_tot = trapz(diams(13:end),vdnCSA_aloha([1:4 6:end],[13:end]),2);
-load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Haptophyta_uw_all.mat'], 'vdnCSA_aloha','diams')
-Vhap_tot = trapz(diams(13:end),vdnCSA_aloha([1:4 6:end],[13:end]),2);
+load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Detritus_uw_all.mat'], 'vdn_aloha','diams')
+Vdet_tot = trapz(diams(13:end),vdn_aloha([1:4 6:end],[13:end]),2);
+load([datadir filesep 'CNN_TS4_2025-02-26_merged_Group1' filesep 'Haptophyta_uw_all.mat'], 'vdn_aloha','diams')
+Vhap_tot = trapz(diams(13:end),vdn_aloha([1:4 6:end],[13:end]),2);
 
-mdl_D50_vs_cyano_plus_dia_plus_det_plus_hapto = fitlm([log10(Vcyano_tot+eps), log10(Vdiatom_tot+eps), log10(Vdet_tot+eps), log10(Vhap_tot+eps)],D50);
-mdl_D50_vs_cyano_plus_dia_plus_det_plus_hapto_stdz = fitlm([zscore(log10(Vcyano_tot+eps)), zscore(log10(Vdiatom_tot+eps)), zscore(log10(Vdet_tot+eps)), zscore(log10(Vhap_tot+eps))],zscore(D50));
-mdl_D90_vs_cyano_plus_det = fitlm([log10(Vcyano_tot+eps), log10(Vdet_tot+eps)],D90);
-mdl_D90_vs_cyano_plus_det_stdz = fitlm([zscore(log10(Vcyano_tot+eps)), zscore(log10(Vdet_tot+eps))],zscore(D90));
+mdl_D50_vs_cyano_plus_dia_plus_det = fitlm([log10(Vcyano_tot+eps), log10(Vdiatom_tot+eps), log10(Vdet_tot+eps)],D50);
+mdl_D50_vs_cyano_plus_dia_plus_det_stdz = fitlm([zscore(log10(Vcyano_tot+eps)), zscore(log10(Vdiatom_tot+eps)), zscore(log10(Vdet_tot+eps))],zscore(D50));
+%mdl_D90_vs_cyano_plus_det = fitlm([log10(Vcyano_tot+eps), log10(Vdet_tot+eps)],D90);
+%mdl_D90_vs_cyano_plus_det_stdz = fitlm([zscore(log10(Vcyano_tot+eps)), zscore(log10(Vdet_tot+eps))],zscore(D90));
 
 
 %% ===== Collect all mdl_* into summary tables =====

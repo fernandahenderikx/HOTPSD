@@ -23,8 +23,11 @@
 
 datadir = '\\jett\AWlab\DATA\Fernanda\PAPERS\HOT_PSD\submission\code\data';
 % get bulk vdn by cruise
-load([datadir filesep 'avg_bulk_psd_aloha_kahe.mat'],'cruisen_aloha','vdn_aloha')
+load([datadir filesep 'avg_bulk_psd_aloha_kahe_notCSA.mat'],'cruisen_aloha','vdn_aloha')
 u=unique(cruisen_aloha);
+ind = find(u==308);
+u(ind)=[];
+
 for i = 1:length(u)
     ind = find(cruisen_aloha==u(i));
     Vbulk_cruise(i,:) = nanmean(vdn_aloha(ind,:),1);
@@ -89,9 +92,13 @@ for g = 1:nGroups
     fprintf('\n==============================\n');
     fprintf('Processing group: %s\n', groupNames{g});
     
-    load(groupFiles{g}, 'vdnCSA_aloha','diams','gmt_all','cruisen_all');
+    load(groupFiles{g}, 'vdn_aloha','diams','gmt_all','cruisen_all');
     
-    Vgroup_cruise = vdnCSA_aloha;
+    ind = find(cruisen_all==308);
+    vdn_aloha(ind,:)=[];
+    gmt_all(ind)=[];
+
+    Vgroup_cruise = vdn_aloha;
 
 
 
